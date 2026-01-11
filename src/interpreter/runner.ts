@@ -1,5 +1,7 @@
 import type { LED } from './types';
 import type { Program } from '../../shared/bytecode';
+import { UnknownInstructionError } from './errors';
+import instructions from './instructions';
 
 export class Runner {
   private leds: LED[];
@@ -14,10 +16,14 @@ export class Runner {
 
   run(bytecode: Program): LED[] {
     for (const instruction of bytecode.instructions) {
-      if (instruction.op === 'SET_LED') {
-        this.leds[instruction.position] = instruction.color;
+      switch (instruction.op) {
+        case 'SET_LED':
+          instructions.executeSetLED(this.leds, instruction);
+          break;
+        default:
+          throw new UnknownInstructionError(instruction.op);
       }
     }
     return this.leds;
-  }
+}
 }

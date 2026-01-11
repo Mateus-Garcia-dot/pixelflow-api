@@ -27,3 +27,19 @@ test('should set LED to red', () => {
   assert.deepStrictEqual(result[0], { r: 255, g: 0, b: 0 });
   assert.deepStrictEqual(result[1], { r: 0, g: 0, b: 0 });
 });
+
+test('should throw error for unknown instruction', () => {
+  const runner = new Runner(10);
+  const program = {
+    instructions: [
+      { op: 'INVALID_OP' as any, position: 0 }
+    ]
+  };
+
+  assert.throws(
+    () => runner.run(program),
+    (err: Error) => {
+      return err.message === 'Unknown instruction: INVALID_OP';
+    }
+  );
+});
