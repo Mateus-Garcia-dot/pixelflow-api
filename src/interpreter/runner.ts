@@ -1,5 +1,5 @@
 import type { LED } from './types';
-import type { Program } from '../../shared/bytecode';
+import type { Program } from '../shared/bytecode';
 import { UnknownInstructionError } from './errors';
 import instructions from './instructions';
 
@@ -20,10 +20,13 @@ export class Runner {
         case 'SET_LED':
           instructions.executeSetLED(this.leds, instruction);
           break;
+        case 'SET_LED_RANGE':
+          instructions.executeSetLEDRange(this.leds, instruction);
+          break;
         default:
           throw new UnknownInstructionError(instruction.op);
       }
     }
     return this.leds;
-}
+  }
 }

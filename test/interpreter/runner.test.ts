@@ -28,6 +28,26 @@ test('should set LED to red', () => {
   assert.deepStrictEqual(result[1], { r: 0, g: 0, b: 0 });
 });
 
+test('should set LED range to blue', () => {
+  const runner = new Runner(10);
+  const program = {
+    instructions: [
+      {
+        op: 'SET_LED_RANGE' as const,
+        start: 2,
+        end: 5,
+        color: { r: 0, g: 0, b: 255 }
+      }
+    ]
+  };
+  const result = runner.run(program);
+
+  assert.deepStrictEqual(result[1], { r: 0, g: 0, b: 0 });
+  assert.deepStrictEqual(result[2], { r: 0, g: 0, b: 255 });
+  assert.deepStrictEqual(result[5], { r: 0, g: 0, b: 255 });
+  assert.deepStrictEqual(result[6], { r: 0, g: 0, b: 0 });
+});
+
 test('should throw error for unknown instruction', () => {
   const runner = new Runner(10);
   const program = {

@@ -10,7 +10,16 @@ export interface SetLEDInstruction {
   color: Color;
 }
 
-export type Instruction = SetLEDInstruction;
+export interface SetLEDRangeInstruction {
+  op: 'SET_LED_RANGE';
+  start: number;
+  end: number;
+  color: Color;
+}
+
+export type Instruction =
+  | SetLEDInstruction
+  | SetLEDRangeInstruction;
 
 export interface Program {
   instructions: Instruction[];
