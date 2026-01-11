@@ -4,7 +4,43 @@ export interface Color {
   b: number;
 }
 
-export type Value = number | { var: string };
+export interface BinaryMathExpression {
+  op: 'ADD' | 'SUBTRACT' | 'MULTIPLY' | 'DIVIDE' | 'POWER';
+  left: Value;
+  right: Value;
+}
+
+export interface ModuloExpression {
+  op: 'MODULO';
+  dividend: Value;
+  divisor: Value;
+}
+
+export interface UnaryMathExpression {
+  op: 'ABS' | 'ROUND' | 'FLOOR' | 'CEILING';
+  value: Value;
+}
+
+export interface RandomExpression {
+  op: 'RANDOM';
+  from: Value;
+  to: Value;
+}
+
+export interface MinMaxExpression {
+  op: 'MIN' | 'MAX';
+  a: Value;
+  b: Value;
+}
+
+export type Value =
+  | number
+  | { var: string }
+  | BinaryMathExpression
+  | ModuloExpression
+  | UnaryMathExpression
+  | RandomExpression
+  | MinMaxExpression;
 
 export interface SetLEDInstruction {
   op: 'SET_LED';

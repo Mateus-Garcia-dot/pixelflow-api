@@ -165,3 +165,93 @@ test('should throw error for unknown instruction', () => {
     }
   );
 });
+
+test('should use math expressions in FOR_EACH', () => {
+  const runner = new Runner(10);
+  const program = {
+    instructions: [
+      {
+        op: 'FOR_EACH' as const,
+        variable: 'i',
+        from: 0,
+        to: 2,
+        body: [
+          {
+            op: 'SET_LED' as const,
+            position: {
+              op: 'ADD' as const,
+              left: { var: 'i' },
+              right: 1
+            },
+            color: { r: 255, g: 0, b: 0 }
+          }
+        ]
+      }
+    ]
+  };
+  const result = runner.run(program);
+
+  assert.deepStrictEqual(result[0], { r: 0, g: 0, b: 0 });
+  assert.deepStrictEqual(result[1], { r: 255, g: 0, b: 0 });
+  assert.deepStrictEqual(result[2], { r: 255, g: 0, b: 0 });
+  assert.deepStrictEqual(result[3], { r: 255, g: 0, b: 0 });
+  assert.deepStrictEqual(result[4], { r: 0, g: 0, b: 0 });
+});
+
+test('should handle complex nested math expressions', () => {
+  // equivalent code:
+  //
+  // for (let i = 0; i <= 4; i++) {
+  //   const subtract = i - 2;
+  //   const abs = Math.abs(subtract);
+  //   const multiply = abs * 2;
+  //   const max = Math.max(0, multiply);
+  //   const position = Math.min(9, max);
+  //   setLED(position, { r: 0, g: 255, b: 0 });
+  // }
+
+  const runner = new Runner(10);
+  const program = {
+    instructions: [
+      {
+        op: 'FOR_EACH' as const,
+        variable: 'i',
+        from: 0,
+        to: 4,
+        body: [
+          {
+            op: 'SET_LED' as const,
+            position: {
+              op: 'MIN' as const,
+              a: 9,
+              b: {
+                op: 'MAX' as const,
+                a: 0,
+                b: {
+                  op: 'MULTIPLY' as const,
+                  left: {
+                    op: 'ABS' as const,
+                    value: {
+                      op: 'SUBTRACT' as const,
+                      left: { var: 'i' },
+                      right: 2
+                    }
+                  },
+                  right: 2
+                }
+              }
+            },
+            color: { r: 0, g: 255, b: 0 }
+          }
+        ]
+      }
+    ]
+  };
+  const result = runner.run(program);
+
+  assert.deepStrictEqual(result[0], { r: 0, g: 255, b: 0 });
+  assert.deepStrictEqual(result[1], { r: 0, g: 0, b: 0 });
+  assert.deepStrictEqual(result[2], { r: 0, g: 255, b: 0 });
+  assert.deepStrictEqual(result[3], { r: 0, g: 0, b: 0 });
+  assert.deepStrictEqual(result[4], { r: 0, g: 255, b: 0 });
+});
