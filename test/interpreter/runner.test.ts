@@ -80,6 +80,28 @@ test('should set all LEDs to green', () => {
   });
 });
 
+test('should execute loop 3 times', () => {
+  const runner = new Runner(10);
+  const program = {
+    instructions: [
+      {
+        op: 'LOOP' as const,
+        times: 3,
+        body: [
+          { op: 'SET_LED' as const, position: 0, color: { r: 255, g: 0, b: 0 } },
+          { op: 'SET_LED' as const, position: 1, color: { r: 0, g: 255, b: 0 } }
+        ]
+      }
+    ]
+  };
+  const result = runner.run(program);
+
+  assert.deepStrictEqual(result[0], { r: 255, g: 0, b: 0 });
+  assert.deepStrictEqual(result[1], { r: 0, g: 255, b: 0 });
+  assert.deepStrictEqual(result[2], { r: 0, g: 0, b: 0 });
+});
+
+
 test('should throw error for unknown instruction', () => {
   const runner = new Runner(10);
   const program = {

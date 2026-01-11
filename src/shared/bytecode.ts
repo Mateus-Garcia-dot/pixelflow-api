@@ -27,6 +27,12 @@ export interface SetAllLEDsInstruction {
   color: Color;
 }
 
+export interface LoopInstruction {
+  op: 'LOOP';
+  times: number;
+  body: Instruction[];
+}
+
 export type Instruction =
   | SetLEDInstruction
   | SetLEDRangeInstruction
