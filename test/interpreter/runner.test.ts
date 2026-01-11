@@ -42,8 +42,11 @@ test('should set LED range to blue', () => {
   };
   const result = runner.run(program);
 
+  assert.deepStrictEqual(result[0], { r: 0, g: 0, b: 0 });
   assert.deepStrictEqual(result[1], { r: 0, g: 0, b: 0 });
   assert.deepStrictEqual(result[2], { r: 0, g: 0, b: 255 });
+  assert.deepStrictEqual(result[3], { r: 0, g: 0, b: 255 });
+  assert.deepStrictEqual(result[4], { r: 0, g: 0, b: 255 });
   assert.deepStrictEqual(result[5], { r: 0, g: 0, b: 255 });
   assert.deepStrictEqual(result[6], { r: 0, g: 0, b: 0 });
 });

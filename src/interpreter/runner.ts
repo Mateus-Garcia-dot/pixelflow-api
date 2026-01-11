@@ -18,10 +18,10 @@ export class Runner {
     for (const instruction of bytecode.instructions) {
       switch (instruction.op) {
         case 'SET_LED':
-          instructions.executeSetLED(this.leds, instruction);
+          instructions.executeSetLED(this.leds, instruction.position, instruction.color);
           break;
         case 'SET_LED_RANGE':
-          instructions.executeSetLEDRange(this.leds, instruction);
+          instructions.executeSetLEDRange(this.leds, instruction.start, instruction.end, instruction.color);
           break;
         default:
           throw new UnknownInstructionError(instruction.op);
