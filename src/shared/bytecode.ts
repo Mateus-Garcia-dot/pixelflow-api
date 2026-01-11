@@ -4,22 +4,24 @@ export interface Color {
   b: number;
 }
 
+export type Value = number | { var: string };
+
 export interface SetLEDInstruction {
   op: 'SET_LED';
-  position: number;
+  position: Value;
   color: Color;
 }
 
 export interface SetLEDRangeInstruction {
   op: 'SET_LED_RANGE';
-  start: number;
-  end: number;
+  start: Value;
+  end: Value;
   color: Color;
 }
 
 export interface DelayInstruction {
   op: 'DELAY';
-  ms: number;
+  ms: Value;
 }
 
 export interface SetAllLEDsInstruction {
@@ -29,7 +31,15 @@ export interface SetAllLEDsInstruction {
 
 export interface LoopInstruction {
   op: 'LOOP';
-  times: number;
+  times: Value;
+  body: Instruction[];
+}
+
+export interface ForEachInstruction {
+  op: 'FOR_EACH';
+  variable: string;
+  from: Value;
+  to: Value;
   body: Instruction[];
 }
 
@@ -37,7 +47,9 @@ export type Instruction =
   | SetLEDInstruction
   | SetLEDRangeInstruction
   | DelayInstruction
-  | SetAllLEDsInstruction;
+  | SetAllLEDsInstruction
+  | LoopInstruction
+  | ForEachInstruction;
 
 export interface Program {
   instructions: Instruction[];

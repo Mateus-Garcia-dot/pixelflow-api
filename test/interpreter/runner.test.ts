@@ -101,6 +101,54 @@ test('should execute loop 3 times', () => {
   assert.deepStrictEqual(result[2], { r: 0, g: 0, b: 0 });
 });
 
+test('should execute FOR_EACH with variable', () => {
+  const runner = new Runner(10);
+  const program = {
+    instructions: [
+      {
+        op: 'FOR_EACH' as const,
+        variable: 'position',
+        from: 0,
+        to: 3,
+        body: [
+          {
+            op: 'SET_LED' as const,
+            position: { var: 'position' },
+            color: { r: 255, g: 0, b: 0 }
+          }
+        ]
+      }
+    ]
+  };
+  const result = runner.run(program);
+
+  assert.deepStrictEqual(result[0], { r: 255, g: 0, b: 0 });
+  assert.deepStrictEqual(result[1], { r: 255, g: 0, b: 0 });
+  assert.deepStrictEqual(result[2], { r: 255, g: 0, b: 0 });
+  assert.deepStrictEqual(result[3], { r: 255, g: 0, b: 0 });
+  assert.deepStrictEqual(result[4], { r: 0, g: 0, b: 0 });
+});
+
+test('should throw error when using undefined variable', () => {
+  const runner = new Runner(10);
+  const program = {
+    instructions: [
+      {
+        op: 'SET_LED' as const,
+        position: { var: 'undefinedVar' },
+        color: { r: 255, g: 0, b: 0 }
+      }
+    ]
+  };
+
+  assert.throws(
+    () => runner.run(program),
+    (err: Error) => {
+      return err.message.includes('undefinedVar') && err.message.includes('not defined');
+    }
+  );
+});
+
 
 test('should throw error for unknown instruction', () => {
   const runner = new Runner(10);

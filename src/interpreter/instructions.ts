@@ -1,30 +1,51 @@
 import type { LED } from './types';
-import type { Color , SetLEDInstruction, SetLEDRangeInstruction } from '../shared/bytecode';
+import type { Color, Value, Instruction } from '../shared/bytecode';
+import type { ExecutionContext } from './context';
+import { evaluate } from './evaluate';
 
-function executeSetLED(leds: LED[], position: number, color: Color): void {
-  leds[position] = {r: color.r, g: color.g, b: color.b };
+function executeSetLED(leds: LED[], position: Value, color: Color, context: ExecutionContext): void {
+  const pos = evaluate(position, context);
+  leds[pos] = { r: color.r, g: color.g, b: color.b };
 }
 
-function executeSetLEDRange(leds: LED[], position_start: number, position_end: number, color: Color): void {
-  for (let current_position = position_start; current_position <= position_end; current_position++) {
-    executeSetLED(leds, current_position, color)
+function executeSetLEDRange(leds: LED[], position_start: Value, position_end: Value, color: Color, context: ExecutionContext): void {
+  const start = evaluate(position_start, context);
+  const end = evaluate(position_end, context);
+
+  for (let current_position = start; current_position <= end; current_position++) {
+    executeSetLED(leds, current_position, color, context);
   }
 }
 
-function executeDelay(leds: LED[], instruction: number): void {
+function executeDelay(leds: LED[], ms: Value, context: ExecutionContext): void {
+  const delay = evaluate(ms, context);
   // No-op - delay is handled by the executor/device
 }
 
-function executeSetAllLEDs(leds: LED[], color: Color): void {
-  executeSetLEDRange(leds, 0, leds.length - 1, color);
+function executeSetAllLEDs(leds: LED[], color: Color, context: ExecutionContext): void {
+  executeSetLEDRange(leds, 0, leds.length - 1, color, context);
 }
 
-function executeLoop(leds: LED[], times: number, body: Instruction[], executeInstruction: (instruction: Instruction) => void): void {
-  for (let i = 0; i < times; i++) {
+function executeLoop(leds: LED[], times: Value, body: Instruction[], executeInstruction: (instruction: Instruction) => void, context: ExecutionContext): void {
+  const loopCount = evaluate(times, context);
+
+  for (let i = 0; i < loopCount; i++) {
     for (const instruction of body) {
       executeInstruction(instruction);
     }
   }
 }
 
-export default { executeSetLED, executeSetLEDRange, executeDelay, executeSetAllLEDs, executeLoop };
+function executeForEach(leds: LED[], variable: string, from: Value, to: Value, body: Instruction[], executeInstruction: (instruction: Instruction) => void, context: ExecutionContext): void {
+  const start = evaluate(from, context);
+  const end = evaluate(to, context);
+
+  for (let i = start; i <= end; i++) {
+    context.set(variable, i);
+    for (const instruction of body) {
+      executeInstruction(instruction);
+    }
+  }
+}
+
+export default { executeSetLED, executeSetLEDRange, executeDelay, executeSetAllLEDs, executeLoop, executeForEach};
